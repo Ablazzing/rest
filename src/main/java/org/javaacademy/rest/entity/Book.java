@@ -12,7 +12,7 @@ public class Book {
     @NonNull
     private String name;
     @NonNull
-    private List<Page> pages;
+    private List<BookPage> bookPages;
     @NonNull
     private  String author;
     @NonNull

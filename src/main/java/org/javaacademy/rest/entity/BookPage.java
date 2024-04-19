@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
-public class Page {
+public class BookPage {
     @NonNull
     private String text;
 }

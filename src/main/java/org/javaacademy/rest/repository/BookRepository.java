@@ -1,5 +1,6 @@
 package org.javaacademy.rest.repository;
 
+import lombok.SneakyThrows;
 import org.javaacademy.rest.entity.Book;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +19,19 @@ public class BookRepository {
      * Create
      */
     public Book add(Book book) {
-        UUID uuid = UUID.randomUUID();
-        book.setId(uuid.toString());
-        bookMap.put(uuid.toString(), book);
+        String uuid = UUID.randomUUID().toString()
+                .substring(0, 5);
+        book.setId(uuid);
+        bookMap.put(uuid, book);
         return book;
     }
 
     /**
      * Get all (READ)
      */
+    @SneakyThrows
     public List<Book> findAll() {
+        Thread.sleep(2000);
         return new ArrayList<>(bookMap.values());
     }
 

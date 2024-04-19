@@ -3,6 +3,8 @@ package org.javaacademy.rest.service;
 import lombok.RequiredArgsConstructor;
 import org.javaacademy.rest.dto.BookDtoRq;
 import org.javaacademy.rest.dto.BookDtoRs;
+import org.javaacademy.rest.dto.BookPageDtoRs;
+import org.javaacademy.rest.dto.PageDto;
 import org.javaacademy.rest.entity.Book;
 import org.javaacademy.rest.repository.BookRepository;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,7 @@ public class BookService {
         oldBook.setName(updateDto.getName() != null ? updateDto.getName() : oldBook.getName());
         oldBook.setAuthor(updateDto.getAuthor() != null ? updateDto.getAuthor() : oldBook.getAuthor());
         oldBook.setPrice(updateDto.getPrice() != null ? updateDto.getPrice() : oldBook.getPrice());
-        oldBook.setPages(updateDto.getPages() != null ? updateDto.getPages() : oldBook.getPages());
+        oldBook.setBookPages(updateDto.getBookPages() != null ? updateDto.getBookPages() : oldBook.getBookPages());
         bookRepository.updateByKey(key, oldBook);
         return convertToDtoRs(oldBook);
     }
@@ -56,13 +58,13 @@ public class BookService {
     }
 
     private Book convertToEntity(BookDtoRq dto) {
-        return new Book(dto.getName(), dto.getPages(), dto.getAuthor(), dto.getPrice());
+        return new Book(dto.getName(), dto.getBookPages(), dto.getAuthor(), dto.getPrice());
     }
 
     private BookDtoRs convertToDtoRs(Book book, LocalDateTime timeApply) {
         return new BookDtoRs(
                 book.getName(),
-                book.getPages(),
+                book.getBookPages(),
                 book.getAuthor(),
                 book.getPrice(),
                 timeApply,
@@ -70,4 +72,19 @@ public class BookService {
         );
     }
 
+    public PageDto<List<BookPageDtoRs>> getPages(String bookKey, Integer startElement, Integer pageSize) {
+        Book book = bookRepository.findByKey(bookKey).orElseThrow();
+        int countPagesTotal = book.getBookPages().size();
+        List<BookPageDtoRs> bookPages = book.getBookPages().stream()
+                .skip(startElement)
+                .limit(pageSize)
+                .map(e -> new BookPageDtoRs(book.getName(), e.getText()))
+                .toList();
+        return new PageDto<>(bookPages.size(),
+                countPagesTotal,
+                startElement,
+                startElement + pageSize,
+                bookPages
+        );
+    }
 }
